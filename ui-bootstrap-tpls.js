@@ -554,9 +554,9 @@ dialogModule.provider("$dialog", function(){
     keyboard: true, // close with esc key
     backdropClick: true // only in conjunction with backdrop=true
     /* other options: template, templateUrl, controller */
-	};
+  };
 
-	var globalOptions = {};
+  var globalOptions = {};
 
   var activeBackdrops = {value : 0};
 
@@ -566,21 +566,21 @@ dialogModule.provider("$dialog", function(){
   //        // don't close dialog when backdrop is clicked by default
   //        $dialogProvider.options({backdropClick: false});
   //      });
-	this.options = function(value){
-		globalOptions = value;
-	};
+  this.options = function(value){
+    globalOptions = value;
+  };
 
   // Returns the actual `$dialog` service that is injected in controllers
-	this.$get = ["$http", "$document", "$compile", "$rootScope", "$controller", "$templateCache", "$q", "$transition", "$injector",
+  this.$get = ["$http", "$document", "$compile", "$rootScope", "$controller", "$templateCache", "$q", "$transition", "$injector",
   function ($http, $document, $compile, $rootScope, $controller, $templateCache, $q, $transition, $injector) {
 
-		var body = $document.find('body');
+    var body = $document.find('body');
 
-		function createElement(clazz) {
-			var el = angular.element("<div>");
-			el.addClass(clazz);
-			return el;
-		}
+    function createElement(clazz) {
+      var el = angular.element("<div>");
+      el.addClass(clazz);
+      return el;
+    }
 
     // The `Dialog` class represents a modal dialog. The dialog class can be invoked by providing an options object
     // containing at lest template or templateUrl and controller:
@@ -590,7 +590,7 @@ dialogModule.provider("$dialog", function(){
     // Dialogs can also be created using templateUrl and controller as distinct arguments:
     //
     //     var d = new Dialog('path/to/dialog.html', MyDialogController);
-		function Dialog(opts) {
+    function Dialog(opts) {
 
       var self = this, options = this.options = angular.extend({}, defaults, globalOptions, opts);
 
@@ -1179,13 +1179,19 @@ angular.module( 'ui.bootstrap.popover', [] )
 
 
 angular.module('ui.bootstrap.tabs', [])
-.controller('TabsController', ['$scope', '$element', function($scope, $element) {
+.controller('TabsController', ['$rootScope', '$scope', '$element', function($rootScope, $scope, $element) {
   var panes = $scope.panes = [];
+  $scope.listCount = '0';
 
   this.select = $scope.select = function selectPane(pane) {
     angular.forEach(panes, function(pane) {
       pane.selected = false;
     });
+
+    if(pane.heading){
+      var paneName = pane.heading.replace(' ', '');
+      $rootScope.$broadcast('getCount' + paneName);
+    }
     pane.selected = true;
   };
 
@@ -1204,6 +1210,10 @@ angular.module('ui.bootstrap.tabs', [])
       $scope.select(panes[index < panes.length ? index : index-1]);
     }
   };
+
+  $scope.$on('handleCountUpdate', function(scope, listCount){
+    $scope.listCount = listCount;
+  });
 }])
 .directive('tabs', function() {
   return {
@@ -1745,13 +1755,13 @@ angular.module("template/carousel/slide.html", []).run(["$templateCache", functi
 angular.module("template/dialog/message.html", []).run(["$templateCache", function($templateCache){
   $templateCache.put("template/dialog/message.html",
     "<div class=\"modal-header\">" +
-    "	<h1>{{ title }}</h1>" +
+    " <h1>{{ title }}</h1>" +
     "</div>" +
     "<div class=\"modal-body\">" +
-    "	<p>{{ message }}</p>" +
+    " <p>{{ message }}</p>" +
     "</div>" +
     "<div class=\"modal-footer\">" +
-    "	<button ng-repeat=\"btn in buttons\" ng-click=\"close(btn.result)\" class=btn ng-class=\"btn.cssClass\">{{ btn.label }}</button>" +
+    " <button ng-repeat=\"btn in buttons\" ng-click=\"close(btn.result)\" class=btn ng-class=\"btn.cssClass\">{{ btn.label }}</button>" +
     "</div>" +
     "");
 }]);
@@ -1790,6 +1800,7 @@ angular.module("template/tabs/tabs.html", []).run(["$templateCache", function($t
     "  <ul class=\"nav nav-tabs\">" +
     "    <li ng-repeat=\"pane in panes\" ng-class=\"{active:pane.selected}\">" +
     "      <a href=\"\" ng-click=\"select(pane)\">{{pane.heading}}</a>" +
+    "       <span ng-show=\"pane.selected\" class=\"tab-active-count\">{{listCount}}</span>" +
     "    </li>" +
     "  </ul>" +
     "  <div class=\"tab-content\" ng-transclude></div>" +
