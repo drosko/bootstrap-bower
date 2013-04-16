@@ -1800,7 +1800,7 @@ angular.module("template/tabs/tabs.html", []).run(["$templateCache", function($t
     "  <ul class=\"nav nav-tabs\">" +
     "    <li ng-repeat=\"pane in panes\" ng-class=\"{active:pane.selected}\">" +
     "      <a href=\"\" ng-click=\"select(pane)\">{{pane.heading}}</a>" +
-    "       <span ng-show=\"pane.selected\" class=\"tab-active-count\">{{listCount}}</span>" +
+    "      <span class=\"tab-active-count\">{{listCount}}</span>" +
     "    </li>" +
     "  </ul>" +
     "  <div class=\"tab-content\" ng-transclude></div>" +
