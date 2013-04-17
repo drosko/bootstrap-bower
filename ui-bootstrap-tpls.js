@@ -1181,7 +1181,7 @@ angular.module( 'ui.bootstrap.popover', [] )
 angular.module('ui.bootstrap.tabs', [])
 .controller('TabsController', ['$rootScope', '$scope', '$element', function($rootScope, $scope, $element) {
   var panes = $scope.panes = [];
-  $scope.listCount = '0';
+  //$scope.listCount = '0';
 
   this.select = $scope.select = function selectPane(pane) {
     angular.forEach(panes, function(pane) {
@@ -1189,8 +1189,9 @@ angular.module('ui.bootstrap.tabs', [])
     });
 
     if(pane.heading){
-      var paneName = pane.heading.replace(' ', '');
-      $rootScope.$broadcast('getCount' + paneName);
+      $scope.paneHeading = pane.heading;
+      $scope.paneName = pane.heading.replace(' ', '');
+      $rootScope.$broadcast('getCount' + $scope.paneName);
     }
     pane.selected = true;
   };
@@ -1211,8 +1212,10 @@ angular.module('ui.bootstrap.tabs', [])
     }
   };
 
-  $scope.$on('handleCountUpdate', function(scope, listCount){
-    $scope.listCount = listCount;
+  $scope.$on('handleCountUpdate', function(scope, listCount, paneName){
+    //$scope.listCount = listCount;
+    $('[data-tab-name="' + paneName + '"]').html(listCount);
+
   });
 }])
 .directive('tabs', function() {
@@ -1798,9 +1801,9 @@ angular.module("template/tabs/tabs.html", []).run(["$templateCache", function($t
   $templateCache.put("template/tabs/tabs.html",
     "<div class=\"tabbable\">" +
     "  <ul class=\"nav nav-tabs\">" +
-    "    <li ng-repeat=\"pane in panes\" ng-class=\"{active:pane.selected}\">" +
+    "    <li ng-repeat=\"pane in panes\" ng-class=\"{active:pane.selected}\" tab-counter>" +
     "      <a href=\"\" ng-click=\"select(pane)\">{{pane.heading}}</a>" +
-    "      <span class=\"tab-active-count\">{{listCount}}</span>" +
+    "      <span class=\"tab-active-count\" data-tab-name='{{pane.heading}}'></span>" +
     "    </li>" +
     "  </ul>" +
     "  <div class=\"tab-content\" ng-transclude></div>" +
